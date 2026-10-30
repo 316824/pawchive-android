@@ -55,8 +55,8 @@ jobs:
         run: |
           mkdir -p android-wheels
           curl --fail --location --retry 3 --retry-delay 2 \
-            --output android-wheels/PySide6-6.12.0-6.12.0-cp310-abi3-android_aarch64.whl \
-            https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-6.12.0-6.12.0-cp310-abi3-android_aarch64.whl
+            --output android-wheels/pyside6-6.12.0-6.12.0-cp310-abi3-android_aarch64.whl \
+            https://download.qt.io/official_releases/QtForPython/pyside6/pyside6-6.12.0-6.12.0-cp310-abi3-android_aarch64.whl
           curl --fail --location --retry 3 --retry-delay 2 \
             --output android-wheels/shiboken6-6.12.0-6.12.0-cp310-abi3-android_aarch64.whl \
             https://download.qt.io/official_releases/QtForPython/shiboken6/shiboken6-6.12.0-6.12.0-cp310-abi3-android_aarch64.whl
