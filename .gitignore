@@ -1,0 +1,7 @@
+.buildozer/
+.pyside6_android_deploy/
+android-wheels/
+bin/
+buildozer.spec
+pysidedeploy.spec
+__pycache__/
