@@ -5,3 +5,12 @@ bin/
 buildozer.spec
 pysidedeploy.spec
 __pycache__/
+.gradle/
+*.apk
+*.aab
+*.p12
+*.jks
+*.keystore
+.env
+.env.*
+!.env.example
