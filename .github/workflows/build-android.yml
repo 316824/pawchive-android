@@ -45,6 +45,9 @@ jobs:
         run: |
           git clone --depth 1 --branch 6.12 https://code.qt.io/pyside/pyside-setup.git pyside-setup
           python -m pip install -r pyside-setup/tools/cross_compile_android/requirements.txt
+          # The setup helper imports packaging.version, but it is not included
+          # in every resolved requirements set.
+          python -m pip install packaging
           python pyside-setup/tools/cross_compile_android/main.py \
             --download-only --skip-update --auto-accept-license
 
