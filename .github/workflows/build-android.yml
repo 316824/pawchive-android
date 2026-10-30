@@ -7,6 +7,7 @@ on:
     paths:
       - "main.py"
       - ".github/workflows/build-android.yml"
+      - "scripts/**"
 
 permissions:
   contents: read
@@ -81,13 +82,29 @@ jobs:
       - name: Add internet permission
         run: python scripts/add_internet_permission.py
 
-      - name: Build APK
-        run: python -m buildozer android debug
+      - name: Restore release signing key
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          test -n "$ANDROID_KEYSTORE_BASE64" || { echo "Missing GitHub secret: ANDROID_KEYSTORE_BASE64"; exit 1; }
+          test -n "$ANDROID_KEYSTORE_PASSWORD" || { echo "Missing GitHub secret: ANDROID_KEYSTORE_PASSWORD"; exit 1; }
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/pawchive-release.p12"
+          test -s "$RUNNER_TEMP/pawchive-release.p12"
+          chmod 600 "$RUNNER_TEMP/pawchive-release.p12"
 
-      - name: Upload APK
+      - name: Build signed release APK
+        env:
+          P4A_RELEASE_KEYSTORE: ${{ runner.temp }}/pawchive-release.p12
+          P4A_RELEASE_KEYSTORE_PASSWD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          P4A_RELEASE_KEYALIAS: pawchive-release
+          P4A_RELEASE_KEYALIAS_PASSWD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: python -m buildozer android release
+
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: PawchiveDownloader-APK
-          path: "**/*.apk"
+          name: PawchiveDownloader-release-APK
+          path: "**/*-release.apk"
           if-no-files-found: error
           retention-days: 14
