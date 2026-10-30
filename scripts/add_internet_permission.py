@@ -38,6 +38,7 @@ else:
 
 # Build a directly installable APK and give every workflow attempt a newer
 # Android versionCode so it can update an already-installed release.
+set_app_option("icon.filename", "%(source.dir)s/assets/app_icon.png")
 set_app_option("android.release_artifact", "apk")
 run_number = os.environ.get("GITHUB_RUN_NUMBER")
 run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "1")
