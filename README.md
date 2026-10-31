@@ -22,12 +22,13 @@
 
 本项目通过 GitHub Actions 在云端构建，不需要在电脑上安装 WSL2、Android Studio 或本地 Android SDK。
 
-1. 打开仓库的 **Actions** 页面，选择 **Build Pawchive Android APK**。
-2. 点击 **Run workflow**，等待工作流成功结束。
-3. 打开本次运行记录，在页面底部的 **Artifacts** 下载 `PawchiveDownloader-release-APK`。
-4. 解压下载文件，将 APK 传到 Android 手机并安装。若手机询问是否允许从当前文件管理器安装应用，请按系统提示授权。
+1. 登录 GitHub，打开仓库的 **Actions** 页面，选择 **Build Pawchive Android APK**。
+2. 打开最近一次成功的运行记录，在页面底部的 **Artifacts** 下载 `PawchiveDownloader-release-APK`。
+3. 解压下载文件，将 APK 传到 Android 手机并安装。若手机询问是否允许从当前文件管理器安装应用，请按系统提示授权。
 
-工作流也会在 `main` 分支的应用或构建文件变更后自动运行。构建产物保留 14 天，请及时下载。
+构建产物保留 14 天；如果没有可下载的产物，可等待维护者重新构建，或按下方说明 Fork 后自行构建。具有仓库写入权限的维护者可点击 **Run workflow** 运行构建；工作流也会在 `main` 分支的应用或构建文件变更后自动运行。
+
+当前 APK 面向 **ARM64（aarch64）** Android 设备，不包含其他处理器架构。
 
 ## 签名密钥配置
 
@@ -40,6 +41,8 @@
 | `ANDROID_KEYSTORE_BASE64` | 发布用 `.p12` 密钥库文件的 Base64 文本 |
 | `ANDROID_KEYSTORE_PASSWORD` | 密钥库密码；当前工作流也用作密钥密码 |
 
+密钥库中的密钥别名必须为 `pawchive-release`，与当前工作流的 `P4A_RELEASE_KEYALIAS` 一致；密钥密码与密钥库密码需保持一致。
+
 别把密钥库、密码、Base64 文本或恢复副本放进公开仓库、Issue 或日志。丢失发布密钥后，使用原应用 ID 发布的更新可能无法覆盖旧版本。Fork 本项目的维护者需要创建并配置自己的签名密钥；GitHub 不会把上游仓库的 Secrets 提供给 fork。
 
 ## 构建环境
@@ -48,8 +51,8 @@
 
 如需自行构建：
 
-1. Fork 或克隆本仓库，并在 GitHub Actions Secrets 中配置自己的签名密钥。
-2. 在仓库 Actions 页面手动运行 `Build Pawchive Android APK`。
+1. Fork 本仓库，并在自己的仓库 GitHub Actions Secrets 中配置签名密钥。
+2. 在自己的仓库 Actions 页面点击 **Run workflow**，运行 `Build Pawchive Android APK`。
 3. 从该次运行的 Artifacts 下载生成的 APK。
 
 ## 使用说明
