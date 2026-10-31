@@ -11,6 +11,7 @@ from pathlib import Path, PurePosixPath
 import re
 import struct
 import sys
+import tarfile
 import zipfile
 
 
@@ -30,6 +31,10 @@ def _normalise_name(name: str) -> str:
 def _elf_aarch64(archive: zipfile.ZipFile, member: str) -> None:
     with archive.open(member) as source:
         header = source.read(64)
+    _check_elf_header(header, member)
+
+
+def _check_elf_header(header: bytes, member: str) -> None:
     if len(header) < 64 or header[:4] != b"\x7fELF":
         raise PackageError(f"{member}: missing or truncated ELF header")
     # ELF64, little-endian, current ELF version. Android ARM64 uses all three.
@@ -38,6 +43,51 @@ def _elf_aarch64(archive: zipfile.ZipFile, member: str) -> None:
     machine = struct.unpack_from("<H", header, 18)[0]
     if machine != ELF_AARCH64:
         raise PackageError(f"{member}: expected AArch64 ELF machine 183, got {machine}")
+
+
+def _python_bundle(archive: zipfile.ZipFile, member: str) -> int:
+    """Inspect p4a's tarball named libpybundle.so, without extracting any files.
+
+    p4a deliberately uses a .so suffix to make Android install this ABI-specific
+    Python resource archive. Its contents, unlike the archive, may include ELF
+    extension modules; those still require the same ARM64 checks.
+    """
+    found_stdlib = False
+    found_python_files = False
+    checked = 0
+    try:
+        with archive.open(member) as source, tarfile.open(fileobj=source, mode="r|*") as bundle:
+            for entry in bundle:
+                path = PurePosixPath(entry.name)
+                if path.is_absolute() or ".." in path.parts:
+                    raise PackageError(f"{member}: unexpected Python bundle member path")
+                parts = path.parts
+                # p4a versions can retain the bundle root or archive its contents.
+                if parts and parts[0] in ("_python_bundle", f"_python_bundle__{ANDROID_ABI}"):
+                    parts = parts[1:]
+                if not entry.isfile():
+                    continue
+                display = f"{member}!{entry.name}"
+                if entry.name.lower().endswith((".dll", ".pyd")):
+                    raise PackageError(f"{display}: Windows binary found in Python bundle")
+                if parts == ("stdlib.zip",):
+                    stream = bundle.extractfile(entry)
+                    if stream is None or stream.read(4) not in (b"PK\x03\x04", b"PK\x05\x06"):
+                        raise PackageError(f"{display}: invalid Python standard library ZIP header")
+                    found_stdlib = True
+                elif len(parts) > 1 and parts[0] in ("modules", "site-packages"):
+                    found_python_files = True
+                if re.search(r"\.so(?:\.\d+)*$", entry.name):
+                    stream = bundle.extractfile(entry)
+                    if stream is None:
+                        raise PackageError(f"{display}: unreadable Python extension")
+                    _check_elf_header(stream.read(64), display)
+                    checked += 1
+    except (tarfile.TarError, OSError, EOFError) as error:
+        raise PackageError(f"{member}: invalid python-for-android resource archive: {error}") from error
+    if not found_stdlib or not found_python_files:
+        raise PackageError(f"{member}: missing standard library or Python modules in resource archive")
+    return checked
 
 
 def _module_members(names: list[str], package: str, module: str) -> list[str]:
@@ -104,9 +154,14 @@ def check_apk(path: Path) -> int:
             pattern = re.compile(rf"libQt6{module}(?:_{re.escape(ANDROID_ABI)})?\.so$")
             if not any(pattern.fullmatch(PurePosixPath(name).name) for name in members):
                 raise PackageError(f"{path.name}: missing Qt6{module} runtime in {prefix}")
+        checked = 0
         for member in members:
-            _elf_aarch64(archive, member)
-        return len(members)
+            if member == prefix + "libpybundle.so":
+                checked += _python_bundle(archive, member)
+            else:
+                _elf_aarch64(archive, member)
+                checked += 1
+        return checked
 
 
 def main(argv=None) -> int:

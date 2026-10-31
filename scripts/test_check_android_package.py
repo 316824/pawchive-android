@@ -1,6 +1,8 @@
 """Offline archive fixtures for Android package validation; no Android SDK needed."""
+import io
 from pathlib import Path
 import struct
+import tarfile
 import tempfile
 import unittest
 import zipfile
@@ -33,6 +35,23 @@ def wheel_members(package="PySide6", version="6.12.0", platform="android_aarch64
 def apk_members():
     return {f"lib/arm64-v8a/libQt6{module}_arm64-v8a.so": elf()
             for module in ("Core", "Gui", "Widgets")}
+
+
+def python_bundle(members=None, prefix=""):
+    stdlib = io.BytesIO()
+    with zipfile.ZipFile(stdlib, "w") as archive:
+        archive.writestr("json/__init__.pyc", b"offline fixture")
+    contents = {"stdlib.zip": stdlib.getvalue(), "modules/_ssl.so": elf(),
+                "site-packages/example.pyc": b"offline fixture"}
+    if members is not None:
+        contents = members
+    output = io.BytesIO()
+    with tarfile.open(fileobj=output, mode="w:gz") as archive:
+        for name, content in contents.items():
+            entry = tarfile.TarInfo(prefix + name)
+            entry.size = len(content)
+            archive.addfile(entry, io.BytesIO(content))
+    return output.getvalue()
 
 
 class AndroidPackageTests(unittest.TestCase):
@@ -100,6 +119,33 @@ class AndroidPackageTests(unittest.TestCase):
                     members[bad_member] = content
                 with self.assertRaisesRegex(PackageError, expected_error):
                     check_apk(self.archive("bad.apk", members))
+
+    def test_p4a_python_resource_bundle_is_not_mistaken_for_an_elf_library(self):
+        for prefix in ("", "_python_bundle/", "_python_bundle__arm64-v8a/"):
+            with self.subTest(prefix=prefix):
+                members = apk_members()
+                members["lib/arm64-v8a/libpybundle.so"] = python_bundle(prefix=prefix)
+                self.assertEqual(check_apk(self.archive("p4a.apk", members)), 4)
+
+    def test_only_the_exact_p4a_bundle_path_gets_resource_archive_validation(self):
+        members = apk_members()
+        members["lib/arm64-v8a/libother.so"] = python_bundle()
+        with self.assertRaisesRegex(PackageError, "ELF"):
+            check_apk(self.archive("wrong-name.apk", members))
+
+    def test_bad_python_bundle_contents_are_not_exempt_from_checks(self):
+        for payload, message in (
+            (b"not a tar archive", "invalid python-for-android"),
+            (python_bundle({"anything.txt": b"not a Python bundle"}), "missing standard library"),
+            (python_bundle({"stdlib.zip": b"not a zip", "modules/_ssl.so": elf()}), "ZIP header"),
+            (python_bundle({"modules/_ssl.so": elf(machine=62)}), "AArch64"),
+            (python_bundle({"site-packages/QtCore.pyd": b"MZ"}), "Windows binary"),
+        ):
+            with self.subTest(message=message):
+                members = apk_members()
+                members["lib/arm64-v8a/libpybundle.so"] = payload
+                with self.assertRaisesRegex(PackageError, message):
+                    check_apk(self.archive("bad-bundle.apk", members))
 
 
 if __name__ == "__main__":

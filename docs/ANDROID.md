@@ -28,6 +28,8 @@ Windows 旧发布包出现的 QtCore 导入失败，定位为 Windows 包内 ICU
 
 为预防后续依赖或架构混用，工作流会在部署前检查两个 wheel 的包名、版本、Android ARM64 平台标记，以及 QtCore／QtGui／QtWidgets 和 Shiboken 的 ELF 架构；发布 APK 上传前再次检查 ARM64 原生库和 Qt 核心运行库，并拒绝混入的 Windows DLL／PYD 文件。检查脚本仅使用 Python 标准库，可离线运行。
 
+其中 `lib/arm64-v8a/libpybundle.so` 是 python-for-android 按 Android 打包要求命名的 Python 资源 tar 包，本身不是 ELF 库。检查器会以流式方式核验它的标准库、Python 模块结构和内部原生扩展，不将这个特定资源包误判为错误架构；其他 `.so` 仍须通过 ELF ARM64 检查。此布局见 [python-for-android 官方说明](https://github.com/kivy/python-for-android/blob/develop/doc/source/troubleshooting.rst#unpacking-an-apk)。
+
 这些是打包静态检查，不能代替手机上的实际启动测试。既有的 **Android 12 闪退尚未定位，也未在本次核查中被宣称修复**；需要对应 APK、手机型号和 `adb logcat` 崩溃日志进一步判断。请勿据此将 Android 16 直接视为最低兼容版本。Qt for Python 的主机与目标 Python 版本可以不同，详见[官方 Android 部署说明](https://doc.qt.io/qtforpython-6/deployment/deployment-pyside6-android-deploy.html)。
 
 ## 功能
