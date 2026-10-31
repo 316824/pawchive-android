@@ -4,7 +4,7 @@
 
 ## 下载与运行
 
-前往 [Windows v1.0.0 发布页](https://github.com/316824/pawchive-android/releases/tag/windows-v1.0.0)，优先下载 Windows 便携 ZIP，解压后双击 `PawchiveDownloader.exe` 即可运行。发布页也提供单独的 EXE 文件。
+前往 [Windows v1.0.0 发布页](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.0)，优先下载 Windows 便携 ZIP，解压后双击 `PawchiveDownloader.exe` 即可运行。发布页也提供单独的 EXE 文件。
 
 发布的 EXE 面向 **64 位 Windows**，已包含 Python 运行环境和依赖库，无需另外安装 Python 或 PySide6。分享便携包时，请保留包内的许可证和第三方依赖说明。源码运行与打包方法见下文。
 
@@ -85,7 +85,7 @@ python -m venv .venv
 
 程序需要能够访问 Pawchive 及其文件服务器。网站页面结构、链接有效性或访问限制发生变化时，可能需要调整解析与下载逻辑；文件类型检查也不等同于完整内容校验。
 
-遇到问题时，可使用日志复制按钮整理错误信息，在 [Issues](https://github.com/316824/pawchive-android/issues) 中说明系统环境、操作步骤和实际结果。提交前请移除日志中的私人路径或不希望公开的信息。
+遇到问题时，可使用日志复制按钮整理错误信息，在 [Issues](https://github.com/316824/Pawchive-Downloader/issues) 中说明系统环境、操作步骤和实际结果。提交前请移除日志中的私人路径或不希望公开的信息。
 
 本项目为非官方工具。请只保存你有权下载的内容，遵守服务规则和版权要求。项目自有代码适用根目录的 [MIT License](../LICENSE)，第三方依赖分别适用其各自许可证。
 

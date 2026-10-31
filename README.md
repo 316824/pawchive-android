@@ -10,8 +10,8 @@
 
 | 平台 | 下载与使用 | 源码与构建说明 |
 | --- | --- | --- |
-| Windows 64 位 | [下载 Windows 版 EXE / ZIP](https://github.com/316824/pawchive-android/releases/tag/windows-v1.0.0)，无需安装 Python | [Windows 版说明](windows/README.md) |
-| Android ARM64 | 在 [Actions](https://github.com/316824/pawchive-android/actions/workflows/build-android.yml) 下载最近一次成功构建的 APK，下载 Artifact 需要登录 GitHub | [Android 版说明](docs/ANDROID.md) |
+| Windows 64 位 | [下载 Windows 版 EXE / ZIP](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.0)，无需安装 Python | [Windows 版说明](windows/README.md) |
+| Android ARM64 | 在 [Actions](https://github.com/316824/Pawchive-Downloader/actions/workflows/build-android.yml) 下载最近一次成功构建的 APK，下载 Artifact 需要登录 GitHub | [Android 版说明](docs/ANDROID.md) |
 
 Windows 用户推荐下载 `PawchiveDownloader-Windows-x64.zip`，解压后双击 `PawchiveDownloader.exe`。ZIP 同时附带使用说明、MIT 许可证和第三方许可文件；也提供与本次发布对应的单独 EXE。
 
@@ -28,7 +28,7 @@ Windows 版还提供明暗主题、四种界面语言、鼠标粒子效果、彩
 
 ## Windows 快速开始
 
-1. 从 [Windows Release](https://github.com/316824/pawchive-android/releases/tag/windows-v1.0.0) 下载并解压 ZIP。
+1. 从 [Windows Release](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.0) 下载并解压 ZIP。
 2. 双击 `PawchiveDownloader.exe`。
 3. 输入完整的画师主页地址，例如 `https://pawchive.pw/fanbox/user/76050360`。
 4. 选择保存文件夹，设置排序和保存方式，点击开始下载。
@@ -68,4 +68,4 @@ Windows 版还提供明暗主题、四种界面语言、鼠标粒子效果、彩
 
 ## English
 
-Pawchive Downloader is an unofficial open-source tool for Windows and Android. It scans creator pages, previews posts, and saves selected images and direct-link attachments. Download the Windows executable from [Releases](https://github.com/316824/pawchive-android/releases/tag/windows-v1.0.0), or see the [Android guide](docs/ANDROID.md) for APK builds. The project's original code is MIT-licensed; third-party dependencies retain their own licenses. Download only content you are authorized to save.
+Pawchive Downloader is an unofficial open-source tool for Windows and Android. It scans creator pages, previews posts, and saves selected images and direct-link attachments. Download the Windows executable from [Releases](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.0), or see the [Android guide](docs/ANDROID.md) for APK builds. The project's original code is MIT-licensed; third-party dependencies retain their own licenses. Download only content you are authorized to save.
