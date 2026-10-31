@@ -4,9 +4,23 @@
 
 ## 下载与运行
 
-前往 [Windows v1.0.0 发布页](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.0)，优先下载 Windows 便携 ZIP，解压后双击 `PawchiveDownloader.exe` 即可运行。发布页也提供单独的 EXE 文件。
+前往 [Windows v1.0.1 发布页](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.1)，优先下载 Windows 便携 ZIP，解压后双击 `PawchiveDownloader.exe` 即可运行。发布页也提供单独的 EXE 文件。
 
 发布的 EXE 面向 **64 位 Windows**，已包含 Python 运行环境和依赖库，无需另外安装 Python 或 PySide6。分享便携包时，请保留包内的许可证和第三方依赖说明。源码运行与打包方法见下文。
+
+## 版本说明与已知问题
+
+**v1.0.1 针对 v1.0.0 的 QtCore 启动失败重新构建。** 旧版本可能在显示主界面前报错：
+
+```text
+ImportError: DLL load failed while importing QtCore: 找不到指定的程序。
+```
+
+已在 Windows 11 上重现旧包故障，并通过二进制依赖核查确认：旧包误收了一份第三方 ICU 78 动态库，其导出的函数名称与 QtCore 所需的 Windows 系统 ICU 接口不匹配。本次打包配置排除这类系统 ICU 同名文件，使用 Windows 自带实现，同时隔离构建工具的搜索路径，检查内嵌依赖并对生成的 EXE 执行离线自检。
+
+普通用户只需重新下载 v1.0.1。请勿向程序目录随意复制其他软件的 Qt 或 ICU DLL。具体执行过的检查和系统范围以 [本次发布说明](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.1) 为准；离线启动检查不能替代所有 Windows 版本上的兼容性测试，也不代表网站下载服务始终可用。
+
+Android 使用另一套平台原生库，Windows 的 DLL 修复不等于修复 Android 启动兼容性。此前 Android 12 设备闪退、Android 13～15 未验证的状态仍保留，详见 [Android 兼容性说明](../docs/ANDROID.md#设备要求与兼容性)。
 
 ## 快速开始
 
@@ -54,7 +68,7 @@
 
 ## 从源码运行
 
-先安装所选 PySide6 版本支持的 **64 位 Python**。在仓库根目录打开 PowerShell，然后执行：
+先安装所选 PySide6 版本支持的 **64 位 Python**。本次 Windows 构建使用 Python 3.14；其他 Python 版本需自行验证。在仓库根目录打开 PowerShell，然后执行：
 
 ```powershell
 cd windows
@@ -64,22 +78,30 @@ python -m venv .venv
 .\.venv\Scripts\python.exe download_pawchive_images.py
 ```
 
-`requirements.txt` 列出程序的三个直接依赖：PySide6、Requests 和 Beautiful Soup。依赖版本未锁定，更新依赖后应检查界面和下载行为。
+`requirements.txt` 固定直接运行依赖：`PySide6-Essentials==6.12.0`、`requests==2.34.2`、`beautifulsoup4==4.15.0`。PySide6-Essentials 提供本程序使用的 `PySide6` 核心与界面模块，无需额外安装完整 Addons、WebEngine 或 PDF 组件。更新依赖后应重新检查界面、文件处理和下载行为。
 
 请将 `1.ico` 与脚本放在同一目录，程序会使用它作为窗口图标。
 
 ## 自行打包 EXE
 
-在上述 Windows 虚拟环境和 `windows` 目录中执行：
+在干净的 Windows 虚拟环境中构建。在仓库根目录打开 PowerShell，然后执行：
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install pyinstaller
-.\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean --onefile --windowed --name PawchiveDownloader --icon "1.ico" --add-data "1.ico;." download_pawchive_images.py
+cd windows
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-build.txt
+.\.venv\Scripts\python.exe build_release.py
 ```
 
-生成文件位于 `dist/PawchiveDownloader.exe`。`--icon` 设置 EXE 图标，`--add-data` 将同一图标打包到运行资源中，供窗口使用。`build` 目录和 `.spec` 文件不是用户运行单文件 EXE 所需的文件。
+`requirements-build.txt` 包含运行依赖及固定的 PyInstaller、构建 hooks 和 PE 文件检查工具。`build_release.py` 配合仓库中的 `PawchiveDownloader.spec`：
 
-发布页提供的是现有 Windows 构建；上述命令用于自行重新打包，不表示不同依赖和构建环境会生成完全相同的二进制文件。
+- 使用最小化的构建搜索路径，避免收入其他软件目录中的同名动态库。
+- 只收集实际使用的 Qt 模块、必要插件和运行依赖，并打包 `1.ico`，保留程序与窗口图标。
+- 核查 ICU 和内嵌二进制依赖，执行生成 EXE 的离线启动自检；失败时停止构建流程。
+
+成功后文件位于 `dist/PawchiveDownloader.exe`。请使用上述构建入口，不建议直接复制旧版通用 `--onefile` 命令跳过依赖检查。源码中的 `.spec` 是可审阅的构建配置；用户运行发布 EXE 时不需要它或 `build` 目录。
+
+固定依赖和构建配置用于减少环境差异，不保证不同系统或工具环境生成逐字节相同的 EXE。发布与分享时仍须保留 MIT 许可和第三方依赖说明。
 
 ## 使用范围与问题反馈
 

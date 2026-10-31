@@ -20,6 +20,7 @@ build/
 dist/
 *.exe
 *.spec
+!windows/PawchiveDownloader.spec
 .venv/
 venv/
 *.part

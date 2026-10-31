@@ -22,6 +22,14 @@
 
 反馈兼容性问题时，请注明 APK 构建来源或日期、手机型号、Android 版本及启动表现。如有崩溃日志，请先移除私人信息，再通过 Issue 提供。后续会根据补充测试和闪退原因更新此表。
 
+### 2026-10-31 启动依赖核查
+
+Windows 旧发布包出现的 QtCore 导入失败，定位为 Windows 包内 ICU 动态库与 QtCore 所需符号不匹配。安卓使用独立的 Android ARM64 wheel 和 ELF `.so` 库，不会加载 Windows 的 DLL；本次核对中，构建工具、PySide6 Android wheel 与 Shiboken6 Android wheel 均为 6.12.0，未发现相同的 Windows ICU 打包问题。
+
+为预防后续依赖或架构混用，工作流会在部署前检查两个 wheel 的包名、版本、Android ARM64 平台标记，以及 QtCore／QtGui／QtWidgets 和 Shiboken 的 ELF 架构；发布 APK 上传前再次检查 ARM64 原生库和 Qt 核心运行库，并拒绝混入的 Windows DLL／PYD 文件。检查脚本仅使用 Python 标准库，可离线运行。
+
+这些是打包静态检查，不能代替手机上的实际启动测试。既有的 **Android 12 闪退尚未定位，也未在本次核查中被宣称修复**；需要对应 APK、手机型号和 `adb logcat` 崩溃日志进一步判断。请勿据此将 Android 16 直接视为最低兼容版本。Qt for Python 的主机与目标 Python 版本可以不同，详见[官方 Android 部署说明](https://doc.qt.io/qtforpython-6/deployment/deployment-pyside6-android-deploy.html)。
+
 ## 功能
 
 - 扫描支持的 Pawchive 画师主页，读取图集标题、日期、封面和可下载文件类型。

@@ -66,6 +66,13 @@ jobs:
             https://download.qt.io/official_releases/QtForPython/shiboken6/shiboken6-6.12.0-6.12.0-cp310-abi3-android_aarch64.whl
           ls -lh android-wheels
 
+      - name: Validate Android wheel versions and architecture
+        run: |
+          python scripts/check_android_package.py \
+            --version 6.12.0 \
+            --pyside-wheel android-wheels/pyside6-6.12.0-6.12.0-cp310-abi3-android_aarch64.whl \
+            --shiboken-wheel android-wheels/shiboken6-6.12.0-6.12.0-cp310-abi3-android_aarch64.whl
+
       - name: Prepare Android packaging configuration
         run: |
           PYSIDE_WHEEL="$(find android-wheels -type f -iname 'pyside6-*.whl' -print -quit)"
@@ -100,6 +107,14 @@ jobs:
           P4A_RELEASE_KEYALIAS: pawchive-release
           P4A_RELEASE_KEYALIAS_PASSWD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: python -m buildozer android release
+
+      - name: Validate signed APK native libraries
+        run: |
+          mapfile -d '' APK_FILES < <(find . -type f -name '*-release.apk' -print0)
+          test "${#APK_FILES[@]}" -gt 0 || { echo "Signed release APK not found"; exit 1; }
+          for apk in "${APK_FILES[@]}"; do
+            python scripts/check_android_package.py --apk "$apk"
+          done
 
       - name: Upload signed APK
         uses: actions/upload-artifact@v4

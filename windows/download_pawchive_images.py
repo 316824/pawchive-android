@@ -905,6 +905,13 @@ class App(QWidget):
         if hasattr(self,'overlay'): self.overlay.sync(); self.overlay.raise_()
 
 if __name__=='__main__':
+    if '--self-test-output' in sys.argv:
+        import argparse
+        from smoke_test import run
+        parser=argparse.ArgumentParser(description='Offline startup check; never downloads files.')
+        parser.add_argument('--self-test-output',type=Path,required=True)
+        args=parser.parse_args()
+        sys.exit(run(App,args.self_test_output))
     app=QApplication(sys.argv); w=App(); w.show(); w.raise_(); w.activateWindow(); sys.exit(app.exec())
 
 

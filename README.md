@@ -10,10 +10,12 @@
 
 | 平台 | 下载与使用 | 源码与构建说明 |
 | --- | --- | --- |
-| Windows 64 位 | [下载 Windows 版 EXE / ZIP](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.0)，无需安装 Python | [Windows 版说明](windows/README.md) |
+| Windows 64 位 | [下载 Windows v1.0.1 EXE / ZIP](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.1)，无需安装 Python | [Windows 版说明](windows/README.md) |
 | Android ARM64 | 在 [Actions](https://github.com/316824/Pawchive-Downloader/actions/workflows/build-android.yml) 下载最近一次成功构建的 APK，下载 Artifact 需要登录 GitHub | [Android 版说明](docs/ANDROID.md) |
 
 Windows 用户推荐下载 `PawchiveDownloader-Windows-x64.zip`，解压后双击 `PawchiveDownloader.exe`。ZIP 同时附带使用说明、MIT 许可证和第三方许可文件；也提供与本次发布对应的单独 EXE。
+
+**Windows v1.0.1 启动修复**：v1.0.0 可能在打开界面前出现 `DLL load failed while importing QtCore: 找不到指定的程序`。本次修复打包时误收不兼容 ICU 动态库的问题，并增加构建依赖检查和 EXE 离线自检。请重新下载新版本；无需自行安装 Python 或 PySide6。技术原因、构建方法和验证范围见 [Windows 说明](windows/README.md#版本说明与已知问题)及对应发布页。
 
 **Android 兼容性仍在验证**：已收到 Android 16 可以打开应用的反馈，Android 12 测试设备存在启动闪退，Android 13～15 尚未验证。目前最低兼容版本尚未确定，安装前请查看 [Android 兼容性说明](docs/ANDROID.md#设备要求与兼容性)。
 
@@ -30,7 +32,7 @@ Windows 版还提供明暗主题、四种界面语言、鼠标粒子效果、彩
 
 ## Windows 快速开始
 
-1. 从 [Windows Release](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.0) 下载并解压 ZIP。
+1. 从 [Windows Release](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.1) 下载并解压 ZIP。
 2. 双击 `PawchiveDownloader.exe`。
 3. 输入完整的画师主页地址，例如 `https://pawchive.pw/fanbox/user/76050360`。
 4. 选择保存文件夹，设置排序和保存方式，点击开始下载。
@@ -48,7 +50,10 @@ Windows 版还提供明暗主题、四种界面语言、鼠标粒子效果、彩
 ├── windows/
 │   ├── download_pawchive_images.py   # Windows 桌面版
 │   ├── 1.ico                        # 桌面版图标
-│   ├── requirements.txt
+│   ├── requirements.txt             # 固定的运行依赖
+│   ├── requirements-build.txt       # 固定的构建依赖
+│   ├── build_release.py             # 构建、依赖核查与离线自检
+│   ├── PawchiveDownloader.spec      # Windows 打包配置
 │   └── README.md
 ├── docs/ANDROID.md                  # Android 使用和签名说明
 ├── main.py                          # Android 版入口
@@ -70,6 +75,8 @@ Windows 版还提供明暗主题、四种界面语言、鼠标粒子效果、彩
 
 ## English
 
-Pawchive Downloader is an unofficial open-source tool for Windows and Android. It scans creator pages, previews posts, and saves selected images and direct-link attachments. Download the Windows executable from [Releases](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.0), or see the [Android guide](docs/ANDROID.md) for APK builds. The project's original code is MIT-licensed; third-party dependencies retain their own licenses. Download only content you are authorized to save.
+Pawchive Downloader is an unofficial open-source tool for Windows and Android. It scans creator pages, previews posts, and saves selected images and direct-link attachments. Download the Windows executable from [Releases](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.1), or see the [Android guide](docs/ANDROID.md) for APK builds. The project's original code is MIT-licensed; third-party dependencies retain their own licenses. Download only content you are authorized to save.
+
+Windows v1.0.1 addresses a startup failure caused by an incompatible ICU DLL bundled in v1.0.0. Python and PySide6 are included in the Windows executable; users do not need to install them separately.
 
 Android compatibility is still being verified; no minimum compatible Android version has been established. Check the compatibility notes in the Android guide before installing.
