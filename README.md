@@ -15,6 +15,8 @@
 
 Windows 用户推荐下载 `PawchiveDownloader-Windows-x64.zip`，解压后双击 `PawchiveDownloader.exe`。ZIP 同时附带使用说明、MIT 许可证和第三方许可文件；也提供与本次发布对应的单独 EXE。
 
+**Android 兼容性仍在验证**：已收到 Android 16 可以打开应用的反馈，Android 12 测试设备存在启动闪退，Android 13～15 尚未验证。目前最低兼容版本尚未确定，安装前请查看 [Android 兼容性说明](docs/ANDROID.md#设备要求与兼容性)。
+
 ## 主要功能
 
 - 输入完整画师主页链接，自动读取分页中的图集。
@@ -69,3 +71,5 @@ Windows 版还提供明暗主题、四种界面语言、鼠标粒子效果、彩
 ## English
 
 Pawchive Downloader is an unofficial open-source tool for Windows and Android. It scans creator pages, previews posts, and saves selected images and direct-link attachments. Download the Windows executable from [Releases](https://github.com/316824/Pawchive-Downloader/releases/tag/windows-v1.0.0), or see the [Android guide](docs/ANDROID.md) for APK builds. The project's original code is MIT-licensed; third-party dependencies retain their own licenses. Download only content you are authorized to save.
+
+Android compatibility is still being verified; no minimum compatible Android version has been established. Check the compatibility notes in the Android guide before installing.

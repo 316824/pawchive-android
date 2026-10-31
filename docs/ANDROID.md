@@ -8,6 +8,20 @@
 
 > 本项目是非官方工具，与 Pawchive、Pixiv、Fanbox 及其他相关服务没有隶属或认可关系。请只下载你有权保存的内容，并遵守网站规则、版权要求及当地法律。
 
+## 设备要求与兼容性
+
+当前 APK 仅包含 **ARM64（aarch64，64 位 ARM）** 架构。**最低兼容 Android 版本尚未确定**，请先参考以下收到的测试反馈：
+
+| Android 版本 | 当前测试反馈 |
+| --- | --- |
+| Android 12 | 测试设备启动闪退，原因尚待定位 |
+| Android 13、14、15 | 尚未验证，暂不能确认是否能正常启动 |
+| Android 16 | 已收到可以正常打开应用的反馈 |
+
+其他 Android 版本暂无测试结论。上述结果仅代表测试设备上的启动情况，不代表同版本所有机型或全部下载功能均已验证；Android 16 也不等于已经确定的最低系统要求。
+
+反馈兼容性问题时，请注明 APK 构建来源或日期、手机型号、Android 版本及启动表现。如有崩溃日志，请先移除私人信息，再通过 Issue 提供。后续会根据补充测试和闪退原因更新此表。
+
 ## 功能
 
 - 扫描支持的 Pawchive 画师主页，读取图集标题、日期、封面和可下载文件类型。
@@ -27,8 +41,6 @@
 3. 解压下载文件，将 APK 传到 Android 手机并安装。若手机询问是否允许从当前文件管理器安装应用，请按系统提示授权。
 
 构建产物保留 14 天；如果没有可下载的产物，可等待维护者重新构建，或按下方说明 Fork 后自行构建。具有仓库写入权限的维护者可点击 **Run workflow** 运行构建；工作流也会在 `main` 分支的应用或构建文件变更后自动运行。
-
-当前 APK 面向 **ARM64（aarch64）** Android 设备，不包含其他处理器架构。
 
 ## 签名密钥配置
 
@@ -80,3 +92,5 @@
 Pawchive Downloader for Android is an unofficial PySide6 app that scans a Pawchive creator page, lets you choose posts, and saves images and direct-link attachments to a folder selected through Android's system picker. APKs are built by GitHub Actions and signed with the repository maintainer's private release key. See the sections above for build and signing setup. Use the app only for content you are authorized to download, and follow the service's rules and applicable copyright laws.
 
 This project is not affiliated with or endorsed by Pawchive, Pixiv, Fanbox, or other related services. The project code is licensed under the MIT License; third-party components retain their own licenses.
+
+The APK targets ARM64 devices. The minimum compatible Android version has not been established: a test device running Android 12 crashed at launch, Android 16 was reported to launch successfully, and Android 13–15 remain unverified. These reports do not establish compatibility with every device or confirm all download features.
